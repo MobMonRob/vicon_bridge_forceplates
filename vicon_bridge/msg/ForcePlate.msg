@@ -1,0 +1,9 @@
+string device_name
+string device_type
+string device_component_name
+float32 device_value
+string device_unit
+bool occluded
+geometry_msgs/Point force_vector
+geometry_msgs/Point moment_vector
+geometry_msgs/Point centre_of_pressure
