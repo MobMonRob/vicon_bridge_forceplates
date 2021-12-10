@@ -780,9 +780,9 @@ vicon_bridge::ForcePlatePtr ViconReceiver::process_forcePlateData()
 		Output_GetDeviceName _Output_GetDeviceName = msvcbridge::GetDeviceName(DeviceIndex);
 
 		
-		forcePlates_msg -> device_name = _Output_GetDeviceName.DeviceName; //commented
+		//forcePlates_msg -> device_name = _Output_GetDeviceName.DeviceName; //commented
 		//forcePlates_msg -> device_name = "ForcePlates";
-		forcePlates_msg -> device_type = Adapt(_Output_GetDeviceName.DeviceType); //commented
+		//forcePlates_msg -> device_type = Adapt(_Output_GetDeviceName.DeviceType); //commented
 
 		// Count the number of device outputs
 		
@@ -799,9 +799,9 @@ vicon_bridge::ForcePlatePtr ViconReceiver::process_forcePlateData()
                                                              _Output_GetDeviceOutputComponentName.DeviceOutputName,
                                                              _Output_GetDeviceOutputComponentName.DeviceOutputComponentName ).DeviceOutputSubsamples;
 		  
-			this_plate->device_component_name =  _Output_GetDeviceOutputComponentName.DeviceOutputComponentName;
-			ROS_INFO("%d DeviceOutputSubsamples", DeviceOutputSubsamples);
-			ROS_INFO("%s DeviceOutputComponentName",  this_plate->device_component_name.c_str());
+			//this_plate->device_component_name =  _Output_GetDeviceOutputComponentName.DeviceOutputComponentName;
+			//ROS_INFO("%d DeviceOutputSubsamples", DeviceOutputSubsamples);
+			//ROS_INFO("%s DeviceOutputComponentName",  this_plate->device_component_name.c_str());
 
 
 			component_name_array.push_back(_Output_GetDeviceOutputComponentName.DeviceOutputComponentName);
@@ -835,26 +835,45 @@ vicon_bridge::ForcePlatePtr ViconReceiver::process_forcePlateData()
 
             	//vicon_bridge::ForcePlate this_plate(new vicon_bridge::ForcePlate());
 
-            	this_plate->device_name =  _Output_GetDeviceName.DeviceName;
-				//this_plate->device_name =  "helloooo";
-            	this_plate->device_type =  Adapt(_Output_GetDeviceName.DeviceType);
+            	//this_plate->device_name =  _Output_GetDeviceName.DeviceName;
+            	//this_plate->device_type =  Adapt(_Output_GetDeviceName.DeviceType);
 
             	// Get the device output value
-            	Output_GetDeviceOutputValue _Output_GetDeviceOutputValue =
-              	msvcbridge::GetDeviceOutputValue( _Output_GetDeviceName.DeviceName,
-                                             device_name_array[component_index],
-                                             component_name_array[component_index],
-                                             DeviceOutputSubsample ); 
+            	//Output_GetDeviceOutputValue _Output_GetDeviceOutputValue =
+              	//msvcbridge::GetDeviceOutputValue( _Output_GetDeviceName.DeviceName,
+                //                             device_name_array[component_index],
+                //                             component_name_array[component_index],
+                //                             DeviceOutputSubsample ); 
 				//msvcbridge::GetDeviceOutputValue("AMTI", "Force", "Fz", DeviceOutputSubsample);
 
 				
               	//ROS_INFO("%s DeviceOutputComponentName",  component_name_array[component_index].c_str());
 				//ROS_INFO("%f Devicevalue",  _Output_GetDeviceOutputValue.Value);
+
+				Output_GetDeviceOutputValue Fx = msvcbridge::GetDeviceOutputValue( _Output_GetDeviceName.DeviceName,"Force","Fx", DeviceOutputSubsample );
+				Output_GetDeviceOutputValue Fy = msvcbridge::GetDeviceOutputValue( _Output_GetDeviceName.DeviceName,"Force","Fy", DeviceOutputSubsample );
+				Output_GetDeviceOutputValue Fz = msvcbridge::GetDeviceOutputValue( _Output_GetDeviceName.DeviceName,"Force","Fz", DeviceOutputSubsample );
+
+				Output_GetDeviceOutputValue MX = msvcbridge::GetDeviceOutputValue( _Output_GetDeviceName.DeviceName,"Torque","MX", DeviceOutputSubsample );
+				Output_GetDeviceOutputValue MY = msvcbridge::GetDeviceOutputValue( _Output_GetDeviceName.DeviceName,"Torque","MY", DeviceOutputSubsample );
+				Output_GetDeviceOutputValue MZ = msvcbridge::GetDeviceOutputValue( _Output_GetDeviceName.DeviceName,"Torque","MZ", DeviceOutputSubsample );
+				this_plate->stamp = ros::Time::now();
+				this_plate->force_vector.x =   Fx.Value; //* 100/3.4058; //converted into 1 volts = X Newtons
+          		this_plate->force_vector.y =   Fy.Value; //* 100/3.4387;
+          		this_plate->force_vector.z =   Fz.Value; //* 100/0.8557;
+
+				this_plate->moment_vector.x = MX.Value; // 1.4199; //converted 1 V = X Newton millimeters
+          		this_plate->moment_vector.y = MY.Value; // 1.85288;
+          		this_plate->moment_vector.z = MZ.Value; // 1.62651;
+
+				//ROS_INFO("%s DeviceOutputComponentName",  device_name_array[component_index].c_str());
+				//ROS_INFO("%s DeviceOutputComponentName",  component_name_array[component_index].c_str());
+				//ROS_INFO("%f Devicevalue",  _Output_GetDeviceOutputValue.Value);
 				
              	
-				 this_plate->device_value = _Output_GetDeviceOutputValue.Value;
+				//this_plate->device_value = _Output_GetDeviceOutputValue.Value;
               	//this_plate->device_unit = Adapt(_Output_GetDeviceOutputComponentName.DeviceOutputUnit); //commented
-              	this_plate->occluded = false;
+              	//this_plate->occluded = false;
 
 
 
